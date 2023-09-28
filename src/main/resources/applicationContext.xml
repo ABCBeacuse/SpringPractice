@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/beans/spring-context.xsd">
+
+    <!-- 使用 context 空间的标签 -->
+    <context:property-placeholder></context:property-placeholder>
+
+    <bean id="userDao3" class="com.springtest.factory.MyBeanFactory3"></bean>
+
+    <!-- 配置工厂对象，因为 myBeanFactory2 中返回 Bean 实例对象的方法是一个实例方法，所以需要先创建一个 myBeanFactory2 对象 -->
+    <bean id="myBeanFactory2" class="com.springtest.factory.MyBeanFactory2"></bean>
+    <!-- 调用 myBeanFactory2 这个 Bean 对象中的 userDao 方法，返回的 Bean 实例交给 Spring 容器管理。  -->
+    <bean id="userDao2" factory-bean="myBeanFactory2" factory-method="userDao">
+        <constructor-arg name="name" value="haohao"></constructor-arg>
+    </bean>
+
+    <bean id="userDao1" class="com.springtest.factory.MyBeanFactory" factory-method="userDao">
+        <!--静态工厂方式传递参数-->
+        <constructor-arg name="name" value="hao"></constructor-arg>
+        <constructor-arg name="age" value="13"></constructor-arg>
+    </bean>
+
+    <bean id="userService" class="com.springtest.service.impl.UserServiceImpl">
+        <constructor-arg name="name" value="hao"/>
+        <!-- name 表示的是 UserServiceImpl 中的 set${Name} 方法 -->
+        <!-- ref 后面引用 其他 bean 设置, userDao 代表 通过 userDao 从工厂获取一个实例对象并通过 set 方法进行设置（依赖注入） -->
+        <property name="userDao" ref="userDao"/>
+        <!-- 注入集合数据类型 -->
+        <!-- 因为仍然是一个 Bean 类的属性，存在 setStringList 方法，所以使用 property 标签-->
+        <property name="stringList">
+            <!-- 因为注入的并不是 普通数据类型 value，也不是引用数据类型 ref -->
+            <list>
+                <!-- 集合中存储的 String 是普通数据类型，所以可以使用 value -->
+                <value>aaa</value>
+                <value>bbb</value>
+            </list>
+        </property>
+        <property name="userDaoList">
+            <list>
+                <!-- list 中存放三个不同的 UserDaoImpl -->
+                <ref bean="userDao4"/>
+                <ref bean="userDao5"/>
+                <ref bean="userDao6"/>
+            </list>
+        </property>
+        <property name="strSet">
+            <set>
+                <value>ddd</value>
+                <value>ccc</value>
+            </set>
+        </property>
+        <property name="userDaoSet">
+            <set>
+                <ref bean="userDao4"/>
+                <ref bean="userDao5"/>
+            </set>
+        </property>
+        <property name="map">
+            <map>
+                <!-- key：普通数据类型为 key, key-ref：引用数据类型为 key -->
+                <entry key="dao1" value-ref="userDao1"/>
+                <!-- value：普通数据类型为 value, value-ref：引用数据类型为 value -->
+                <entry key="dao2" value-ref="userDao2"/>
+                <entry key="dao3" value-ref="userDao3"/>
+            </map>
+        </property>
+        <property name="properties">
+            <props>
+                <prop key="key1">aaa</prop>
+                <prop key="key2">bbb</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="userDao4" class="com.springtest.dao.impl.UserDaoImpl"></bean>
+    <bean id="userDao5" class="com.springtest.dao.impl.UserDaoImpl"></bean>
+    <bean id="userDao6" class="com.springtest.dao.impl.UserDaoImpl"></bean>
+
+    <bean id="userDao" class="com.springtest.dao.impl.UserDaoImpl" lazy-init="true"/>
+
+    <!-- 自动注入 byName 方式：会去在工厂中寻找 id = xxx （setXxx）的 bean 进行注入 -->
+<!--    <bean id="userService1" class="com.springtest.service.impl.UserServiceImpl" autowire="byName"></bean>-->
+    <bean id="userService1" class="com.springtest.service.impl.UserServiceImpl"></bean>
+
+
+</beans>

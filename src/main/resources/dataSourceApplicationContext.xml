@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 配置 Druid 连接池 -->
+    <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSourceFactory" factory-method="createDataSource">
+        <constructor-arg name="properties">
+            <props>
+                <prop key="driverClassName">com.mysql.jdbc.Driver</prop>
+                <prop key="url">jdbc:mysql://localhost:3306/testdb</prop>
+                <prop key="username">root</prop>
+                <prop key="password">root</prop>
+            </props>
+        </constructor-arg>
+    </bean>
+
+
+    <!-- 配置 connection -->
+    <!-- 加载数据库驱动 -->
+    <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg name="className" value="com.mysql.jdbc.Driver" />
+    </bean>
+
+    <!-- 创建数据库连接 scope="prototype" 配置模式为 "原型"，即创建的 bean 不会放到单例池中管理，每次请求时都创建一个新的 -->
+    <bean id="connection" class="java.sql.DriverManager" factory-method="getConnection" scope="prototype">
+        <constructor-arg name="url" value="jdbc:mysql://localhost:3306/testdb" />
+        <constructor-arg name="user" value="root" />
+        <constructor-arg name="password" value="root" />
+    </bean>
+</beans>

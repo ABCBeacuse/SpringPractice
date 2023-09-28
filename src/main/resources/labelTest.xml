@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="userService" name="xxx,yyy" class="com.springtest.service.impl.UserServiceImpl"/>
+
+    <bean id="userDao" class="com.springtest.dao.impl.UserDaoImpl"/>
+
+    <alias name="userDao" alias="aaa"/>
+    <alias name="userDao" alias="bbb"/>
+    <alias name="userDao" alias="ccc"/>
+
+    <!-- 配置测试环境下，需要加载的 Bean 实例 -->
+    <beans profile="test">
+        <bean id="userService1" class="com.springtest.service.impl.UserServiceImpl"/>
+    </beans>
+
+    <!-- 配置开发环境下，需要加载的 Bean 实例 -->
+    <beans profile="dev">
+        <bean id="userDao1" class="com.springtest.dao.impl.UserDaoImpl"/>
+    </beans>
+</beans>

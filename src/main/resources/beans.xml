@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="userService" class="com.springtest.service.impl.UserServiceImpl">
+        <!-- name 表示的是 UserServiceImpl 中的 set${Name} 方法 -->
+        <!-- ref 后面引用 其他 bean 设置, userDao 代表 通过 userDao 从工厂获取一个实例对象并通过 set 方法进行设置（依赖注入） -->
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="userDao" class="com.springtest.dao.impl.UserDaoImpl"/>
+</beans>
