@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
 
     // BeanFactory 去调用该方法 从容器中获得 userDao 设置到此处
     public void setUserDao(UserDao userDao) {
+        System.out.println("userDao 进行属性注入到 userService");
         this.userDao = userDao;
     }
 

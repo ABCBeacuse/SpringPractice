@@ -14,4 +14,8 @@
             </dataSource>
         </environment>
     </environments>
+
+    <mappers>
+        <mapper resource="com/springtest/mapper/AccountMapper.xml"></mapper>
+    </mappers>
 </configuration>

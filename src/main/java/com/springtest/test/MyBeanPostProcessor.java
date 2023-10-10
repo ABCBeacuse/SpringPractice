@@ -8,6 +8,7 @@ public class MyBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println(beanName + "postProcessBeforeInitialization");
         if(bean instanceof testBean) {
             testBean instance = (testBean) bean;
             instance.setName("haohao");
