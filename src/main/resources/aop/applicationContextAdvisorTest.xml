@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+">
+    <!-- 配置 Target 目标类 -->
+    <bean id="userService" class="aop.service.impl.UserServiceImpl" />
+
+    <!-- 配置 Advice 通知类 -->
+    <bean id="myAdvice" class="aop.advice.MyAdvice3" />
+
+    <!-- aop 配置 -->
+    <aop:config>
+        <!-- 同样需要配置切入点 -->
+        <aop:pointcut id="userServicePointCut" expression="execution(* aop.service.impl.*.*(..))"/>
+        <!-- 使用 <advisor> 标签配置通知类 -->
+        <!-- 并不需要像 <aspect> 标签一样指定 哪个方法是前置方法，哪个方法是后置方法，因为 MyAdvice2 通知类实现了一些接口，存在规范性 -->
+        <aop:advisor advice-ref="myAdvice" pointcut-ref="userServicePointCut" />
+    </aop:config>
+</beans>

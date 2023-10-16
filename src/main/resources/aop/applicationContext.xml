@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+">
+    <!-- 配置 Target 目标类 -->
+    <bean id="userService" class="aop.service.impl.UserServiceImpl" />
+
+    <!-- 配置 Advice 通知类 -->
+    <bean id="myAdvice" class="aop.advice.MyAdvice" />
+
+    <!-- aop 的相关配置 -->
+    <aop:config>
+        <!-- 配置 aop 的切入点,配置切点表达式,目的是要指定哪些方法被增强 -->
+        <aop:pointcut id="userServiceShowPointCut" expression="execution(void aop.service.impl.UserServiceImpl.show1())"/>
+        <!-- 可以配置多个切入点 -->
+
+        <!-- 配置 通知方法，以及是 前置增强 还是 后置增强 -->
+        <!-- 切面 Aspect：由 切入点 和 通知 Advice 组成 ，ref 配置 通知 Advice 类-->
+        <!-- 配置织入，目的是要执行哪些切点与哪些通知进行结合 -->
+        <aop:aspect ref="myAdvice">
+            <!-- 配置前置 Advice 方法 为 myAdvice bean 实例中的 beforeAdvice 方法，对应的 切入点为上方配置的 userServiceShowPointCut -->
+            <aop:before method="beforeAdvice" pointcut-ref="userServiceShowPointCut" />
+        </aop:aspect>
+    </aop:config>
+</beans>

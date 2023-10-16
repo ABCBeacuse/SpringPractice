@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+">
+
+    <!-- 配置 @Component 注解扫描 -->
+    <context:component-scan base-package="transfer"/>
+
+    <!-- 配置 Properties 文件读写 -->
+    <context:property-placeholder location="classpath:transfer/jdbc.properties"/>
+
+    <!-- 配置数据库 Druid 连接池 -->
+    <bean id="DataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!-- 配置 SqlSessionFactoryBean -->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="DataSource"/>
+    </bean>
+
+    <!-- 配置 MapperScannerConfigurer 并配置 mapper 包的路径，来将该包下的 mapper 实例自动注入到 Spring 容器中 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="transfer.mapper"/>
+    </bean>
+
+    <!-- 发现 transaction-manager 也需要配置 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- DataSourceTransactionManager 底层是 jdbc, 所以需要 connection, 所以需要配置一个 dataSource -->
+        <property name="dataSource" ref="DataSource"/>
+    </bean>
+
+    <!-- 配置 advice-ref 的传入参数, spring 提供了 管理事务的通知类，这里需要配置，不仅仅是把 通知类 交给 Spring 进行管理，还要配置一些事务信息 -->
+    <!-- 使用 tx 命名空间的标签 来配置 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" isolation="READ_COMMITTED" timeout="-1" read-only="false" propagation="REQUIRED"/>
+            <tx:method name="delete*"/>
+            <tx:method name="update*"/>
+            <tx:method name="select*"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- aop 增强配置 -->
+    <aop:config>
+        <!-- 配置切入点 -->
+        <aop:pointcut id="txAccountService" expression="execution(* transfer.service.impl.*.*(..))"/>
+        <!-- 使用 <advisor> 标签配置 Spring 的 tx 通知 Advice类 -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txAccountService"/>
+    </aop:config>
+</beans>
